@@ -10,15 +10,15 @@ Created on Sun Feb 23 18:11:22 2020
 #SimpleStrategy is used as we assume this to be single DC setup
 
 #https://stackoverflow.com/questions/49108809/how-to-insert-pandas-dataframe-into-cassandra/50508046
-from aircraft.resources import db 
+from aircraft.lib import db 
+from aircraft.model import airlineontime 
+
 from cassandra.cluster import Cluster
 from cassandra.policies import TokenAwarePolicy, RoundRobinPolicy
-from cassandra.cqlengine.models import Model
 from cassandra.cqlengine.management import sync_table
 from cassandra.cqlengine import connection
 from cassandra.cqlengine.columns import *
 from tqdm import tqdm
-from cassandra.cqlengine import columns
 
 
 
@@ -105,40 +105,10 @@ aircraft_performance_carrier_aircraft_stock = pd.merge(aircraft_performance_carr
 aircraft_performance_carrier_aircraft_stock['Close'] = aircraft_performance_carrier_aircraft_stock['Close'].fillna(0)
 
 
-## Object Mapper
-class airlineontime(Model):
-#  __keyspace__ = 'thirdeye_test'
-  __table_name__ = 'airlineontime'
-  id = columns.UUID(primary_key=True)
-  crsdeptime = columns.Integer()
-  crsarrtime = columns.Integer()
-  flight_date = columns.Date()
-  reporting_airline = columns.Text()
-  tail_number = columns.Text()
-  originairportid = columns.Integer()
-  destairportid = columns.Integer()
-  carriername =  columns.Text()
-  manufacturer =  columns.Text()
-  aircraft_issue_date = columns.Date()
-  aircraft_model = columns.Text()
-  aircraft_type = columns.Text()
-  aircraft_engine = columns.Text()
-  origincityname = columns.Text()
-  depdel15 = columns.Integer()
-  arrdel15 = columns.Integer()
-  carrierdelay = columns.Integer()
-  weatherdelay = columns.Integer()
-  nasdelay = columns.Integer()
-  securitydelay = columns.Integer()
-  lateaircraftdelay = columns.Integer()
-  close = columns.Decimal()
   
 # Apache Cassandra connection
-list_of_ip = ['192.168.56.101']
-cluster = Cluster(list_of_ip,load_balancing_policy=TokenAwarePolicy(RoundRobinPolicy()))
-session = cluster.connect()
-session.set_keyspace('thirdeye_test')
-connection.set_session(session)
+conn = db.db()
+connection = conn.getConnection()
 
 ## saving data to database
 for ind, row in tqdm(aircraft_performance_carrier_aircraft_stock.iterrows(), total=aircraft_performance.shape[0]):
