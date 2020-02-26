@@ -2,6 +2,8 @@ DataStax cassandra driver
 https://docs.datastax.com/en/developer/python-driver/3.21/
 pip install cassandra-driver
 
+run python tests
+python3 -m tests.test_db
 
 ```sql
 create table thirdeye_test.airlineontime (
