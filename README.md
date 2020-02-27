@@ -1,45 +1,35 @@
-# Setup
-## Cassandra Setup
+## Table of Contents
+- [Getting Started](#getting-started)
+  - [Development Environment Setup](#development-environment-setup)
+  - [Installation](#installation)
+- [Architecture](#architecture)
+  - [File Structure](#file-structure)
+  - [Environment Variables](#environment-variables)
+- [Credits](#credits)
+
+## Getting Started
+### Development Environment Setup
+### Installation
+#### Cassandra Setup
 
 ## Python Dependencies
 1. DataStax cassandra driver - https://docs.datastax.com/en/developer/python-driver/3.21/
 ```
 pip install cassandra-driver
 ```
+## Architecture
+<TODO>
 
-# Database Schema
+### File Structure
 
-```sql
-create table thirdeye_test.airlineontime (
-                flight_date date,
-                crsdeptime INT,	
-                crsarrtime INT,	
-                UNIQUE_CARRIER text,
-                reporting_airline text,
-                tail_number text,
-                originairportid INT,	
-                destairportid INT,
-                aircraft_issue_date date, 
-                carriername text,
-                manufacturer text,
-                aircraft_model text, 
-                aircraft_type text, 
-                aircraft_engine text,
-                OriginCityName text,
-                DepDel15 INT,	
-                ArrDel15 INT,
-                CarrierDelay INT,
-                WeatherDelay INT,
-                NASDelay INT,
-                SecurityDelay INT,
-                LateAircraftDelay INT,
-                close DECIMAL,
-                PRIMARY KEY (flight_date, tail_number, reporting_airline, crsdeptime)
-        )
-        WITH comment='Airline on-time performance data';
+The default file structure looks like this:
+
 ```
-# Running Loader
-## Unit Tests
+thirdeye
+├── aircraft/            # Python source code
+├── input/airlines       # Data files
+└── README.md            # This file
 ```
-python3 -m tests.test_db
-```
+### Environment Variables
+
+## Credits
