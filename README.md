@@ -11,8 +11,11 @@
 ## Getting Started
 ### Development Environment Setup
 ### Unit Testing
+TODO: unit test coverage
+
 ### Installation
 #### Cassandra Setup
+TODO: Cassandra 3 node ring setup instructions
 
 ## Python Dependencies
 1. DataStax cassandra driver - https://docs.datastax.com/en/developer/python-driver/3.21/
@@ -29,6 +32,10 @@ The default file structure looks like this:
 ```
 thirdeye
 ├── aircraft/            # Python source code
+   ├── lib               # libraries
+   ├── model             # Object mapper
+   ├── config            # Configuration File
+   ├── tests             # Unit test
 ├── input/airlines       # Data files
 └── README.md            # This file
 ```
