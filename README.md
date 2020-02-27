@@ -1,9 +1,13 @@
-DataStax cassandra driver
-https://docs.datastax.com/en/developer/python-driver/3.21/
-pip install cassandra-driver
+# Setup
+## Cassandra Setup
 
-run python tests
-python3 -m tests.test_db
+## Python Dependencies
+1. DataStax cassandra driver - https://docs.datastax.com/en/developer/python-driver/3.21/
+```
+pip install cassandra-driver
+```
+
+# Database Schema
 
 ```sql
 create table thirdeye_test.airlineontime (
@@ -33,4 +37,9 @@ create table thirdeye_test.airlineontime (
                 PRIMARY KEY (flight_date, tail_number, reporting_airline, crsdeptime)
         )
         WITH comment='Airline on-time performance data';
+```
+# Running Loader
+## Unit Tests
+```
+python3 -m tests.test_db
 ```
