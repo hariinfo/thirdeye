@@ -31,7 +31,7 @@ The default file structure looks like this:
 
 ```
 thirdeye
-├── aircraft/            # Python source code
+├── src/                 # Python source code
    ├── lib               # libraries
    ├── model             # Object mapper
    ├── config            # Configuration File
