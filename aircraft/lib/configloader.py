@@ -12,7 +12,7 @@ class ConfigParser():
             """
             self.config_parser = configparser.ConfigParser()
 
-    def read_ini_file(self, file='/Users/z00430n/_workarea_/msse4/thirdeye/aircraft/data/config.ini'):
+    def read_ini_file(self, file='C:/Users/harii/_workarea_/msse4/thirdeye/aircraft/data/config.ini'):
         """
         Parses in the passed in INI file and converts any Windows environ vars.
 
