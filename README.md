@@ -1,6 +1,7 @@
 ## Table of Contents
 - [Getting Started](#getting-started)
   - [Development Environment Setup](#development-environment-setup)
+  - [Unit Testing](#unit-testing)
   - [Installation](#installation)
 - [Architecture](#architecture)
   - [File Structure](#file-structure)
@@ -9,6 +10,7 @@
 
 ## Getting Started
 ### Development Environment Setup
+### Unit Testing
 ### Installation
 #### Cassandra Setup
 
@@ -18,7 +20,7 @@
 pip install cassandra-driver
 ```
 ## Architecture
-<TODO>
+TODO: Add a high level arch. diagram
 
 ### File Structure
 
