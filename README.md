@@ -16,12 +16,15 @@ TODO: unit test coverage
 ### Installation
 #### Cassandra Setup
 TODO: Cassandra 3 node ring setup instructions
-
+### Running
+usage: pyton cassandra_loader.py -i <inputconfig file path>
 ## Python Dependencies
 1. DataStax cassandra driver - https://docs.datastax.com/en/developer/python-driver/3.21/
 ```
 pip install cassandra-driver
 ```
+
+pip install tqdm
 ## Architecture
 TODO: Add a high level arch. diagram
 

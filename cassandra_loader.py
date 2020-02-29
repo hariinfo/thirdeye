@@ -10,8 +10,8 @@ Created on Sun Feb 23 18:11:22 2020
 #SimpleStrategy is used as we assume this to be single DC setup
 
 #https://stackoverflow.com/questions/49108809/how-to-insert-pandas-dataframe-into-cassandra/50508046
-from aircraft.lib import db 
-from aircraft.model import airlineontime 
+from src.lib import db 
+from src.model import airlineontime 
 
 from cassandra.cluster import Cluster
 from cassandra.policies import TokenAwarePolicy, RoundRobinPolicy
