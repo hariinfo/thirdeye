@@ -17,6 +17,8 @@ TODO: unit test coverage
 
 ### Installation
 #### Cassandra Setup
+I have a 3 node cassandra cluster that makes use of [SimpeStrategy](https://docs.datastax.com/en/archived/cassandra/3.0/cassandra/architecture/archDataDistributeReplication.html) replication strategy as all the nodes are running on the same host guest OS (Similar to a single DC setup).
+
 - Run this command on all three ubuntu VM's to install and run cassandra
   ```
   sudo apt update
@@ -66,11 +68,14 @@ pip install cassandra-driver
 
 pip install tqdm
 ## Architecture
-We have a 3 node cassandra ring setup
+I have a 3 node cassandra ring setup
 The 3 nodes run on a oracle virtual box and the guest OS is a windows machine
 - 198.168.56.101 node1
 - 198.168.56.101 node2
 - 198.168.56.101 node3
+
+![Third Eye](images/cassandra_setup.png)
+
 
 ### File Structure
 
