@@ -1,3 +1,5 @@
+![Third Eye](images\air.png)
+
 ## Table of Contents
 - [Getting Started](#getting-started)
   - [Development Environment Setup](#development-environment-setup)
