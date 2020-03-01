@@ -50,7 +50,11 @@ Edit /etc/cassandra/cassandra.yaml and update following entries
   sudo systemctl restart cassandra
   ```
 - Validate cluster status
+
+  nodetool status
+  
   ```
+    
     --  Address         Load       Tokens       Owns (effective)  Host ID                               Rack
     UN  192.168.56.101  291.63 KiB  256          34.0%             93088d95-4e11-4f8c-9ca9-60e25ae57089  rack1
     UN  192.168.56.102  208.19 KiB  256          34.6%             d14ecef6-babd-481c-96bf-6930facbc460  rack1
@@ -68,7 +72,7 @@ pip install cassandra-driver
 
 pip install tqdm
 ## Architecture
-I have a 3 node cassandra ring setup
+I have a 3 node cassandra ring setup.
 The 3 nodes run on a oracle virtual box and the guest OS is a windows machine
 - 198.168.56.101 node1
 - 198.168.56.101 node2
@@ -83,7 +87,7 @@ The default file structure looks like this:
 
 ```
 thirdeye
-├── src/                 # Python source code
+├── src/                 # Python ETL source code
    ├── lib               # libraries
    ├── model             # Object mapper
    ├── config            # Configuration File
@@ -94,3 +98,5 @@ thirdeye
 ### Environment Variables
 
 ## Credits
+- [Installing cassandra from debian package](https://cassandra.apache.org/doc/latest/getting_started/installing.html#installation-from-debian-packages)
+- [Defining cassandra data schema](https://cassandra.apache.org/doc/latest/data_modeling/data_modeling_schema.html)
