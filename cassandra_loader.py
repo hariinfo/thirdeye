@@ -14,6 +14,8 @@ from src.lib import db
 from src.model import airlineontime 
 
 from cassandra.cluster import Cluster
+from cassandra.cqlengine.models import Model
+from cassandra.cqlengine import columns
 from cassandra.policies import TokenAwarePolicy, RoundRobinPolicy
 from cassandra.cqlengine.management import sync_table
 from cassandra.cqlengine import connection
@@ -26,6 +28,9 @@ from tqdm import tqdm
 import glob
 import pandas as pd
 import datetime as dt
+import sys
+
+
 
 # get data file names
 path =r'./input/airlines/performance/2017/test'
@@ -62,9 +67,8 @@ aircraft_df =  pd.read_csv('./input/airlines/plane-data.csv')
 aircraft_performance_carrier_aircraft = pd.merge(aircraft_performance_carrier, aircraft_df, left_on='Tail_Number', right_on='tailnum', how='left')
 aircraft_performance_carrier_aircraft = aircraft_performance_carrier_aircraft.dropna(subset=['issue_date'])
 aircraft_performance_carrier_aircraft = aircraft_performance_carrier_aircraft[aircraft_performance_carrier_aircraft.issue_date != 'None']
-
+aircraft_performance_carrier_aircraft['FlightDate'] = pd.to_datetime(aircraft_performance_carrier_aircraft["FlightDate"]).dt.strftime('%Y-%m-%d')
 aircraft_performance_carrier_aircraft['issue_date'] = pd.to_datetime(aircraft_performance_carrier_aircraft["issue_date"]).dt.strftime('%Y-%m-%d')
-
 aircraft_performance_carrier_aircraft['DepDel15'] = aircraft_performance_carrier_aircraft['DepDel15'].fillna(0)
 aircraft_performance_carrier_aircraft['ArrDel15'] = aircraft_performance_carrier_aircraft['ArrDel15'].fillna(0)
 aircraft_performance_carrier_aircraft['CarrierDelay'] = aircraft_performance_carrier_aircraft['CarrierDelay'].fillna(0)
@@ -77,41 +81,67 @@ aircraft_performance_carrier_aircraft['LateAircraftDelay'] = aircraft_performanc
 #    if pd.isna(row['Tail_Number']) == True:
 #        print(row['Tail_Number'])
 
-#AA Stock value
+#Load company stock value
 aa_df =  pd.read_csv('./input/airlines/AAL.csv')
 aa_df['Code'] = 'AA'
-aa_df = aa_df.drop(columns=['Open', 'High', 'Low', 'Adj Close', 'Volume'])
-aircraft_performance_carrier_aircraft_stock = pd.merge(aircraft_performance_carrier_aircraft, aa_df, left_on=['Reporting_Airline','FlightDate'], right_on=['Code','Date'], how='left')
-
-#DL Stock value
 dal_df =  pd.read_csv('./input/airlines/DAL.csv')
 dal_df['Code'] = 'DL'
-dal_df = dal_df.drop(columns=['Open', 'High', 'Low', 'Adj Close', 'Volume'])
-aircraft_performance_carrier_aircraft_stock = pd.merge(aircraft_performance_carrier_aircraft, dal_df, left_on=['Reporting_Airline','FlightDate'], right_on=['Code','Date'], how='left')
-
-#United Stock value
 ua_df =  pd.read_csv('./input/airlines/UAL.csv')
 ua_df['Code'] = 'UA'
-ua_df = ua_df.drop(columns=['Open', 'High', 'Low', 'Adj Close', 'Volume'])
-aircraft_performance_carrier_aircraft_stock = pd.merge(aircraft_performance_carrier_aircraft, ua_df, left_on=['Reporting_Airline','FlightDate'], right_on=['Code','Date'], how='left')
-
-#southwest Stock value
 luv_df =  pd.read_csv('./input/airlines/LUV.csv')
 luv_df['Code'] = 'LUV'
-luv_df = luv_df.drop(columns=['Open', 'High', 'Low', 'Adj Close', 'Volume'])
-aircraft_performance_carrier_aircraft_stock = pd.merge(aircraft_performance_carrier_aircraft, luv_df, left_on=['Reporting_Airline','FlightDate'], right_on=['Code','Date'], how='left')
+airline_stock = pd.concat([aa_df, dal_df, ua_df, luv_df]) 
+
+#Drop stock columns not required for our analysis
+airline_stock = airline_stock.drop(columns=['Open', 'High', 'Low', 'Adj Close', 'Volume'])
+
+#Merge with the main dataframe
+#We are merging the stock value on a given day for a airline code
+aircraft_performance_carrier_aircraft_stock = pd.merge(aircraft_performance_carrier_aircraft, airline_stock, left_on=['Reporting_Airline','FlightDate'], right_on=['Code','Date'], how='left')
 
 #Fill all other stock value with 0
 aircraft_performance_carrier_aircraft_stock['Close'] = aircraft_performance_carrier_aircraft_stock['Close'].fillna(0)
 
-
+## Code to load the data into cassandra
+## We are making use of cassandra object mapper to map dataframe rows to the object representation
+## Object Mapper
+class airlineontime(Model):
+  __keyspace__ = 'thirdeye_test'
+  __table_name__ = 'airlineontime'
+  id = columns.UUID(primary_key=True)
+  crsdeptime = columns.Integer()
+  crsarrtime = columns.Integer()
+  flight_date = columns.Date()
+  reporting_airline = columns.Text()
+  tail_number = columns.Text()
+  originairportid = columns.Integer()
+  destairportid = columns.Integer()
+  carriername =  columns.Text()
+  manufacturer =  columns.Text()
+  aircraft_issue_date = columns.Date()
+  aircraft_model = columns.Text()
+  aircraft_type = columns.Text()
+  aircraft_engine = columns.Text()
+  origincityname = columns.Text()
+  depdel15 = columns.Integer()
+  arrdel15 = columns.Integer()
+  carrierdelay = columns.Integer()
+  weatherdelay = columns.Integer()
+  nasdelay = columns.Integer()
+  securitydelay = columns.Integer()
+  lateaircraftdelay = columns.Integer()
+  close = columns.Decimal()
   
 # Apache Cassandra connection
-conn = db.db()
-connection = conn.getConnection()
+list_of_ip = (['192.168.56.101', '192.168.56.102', '192.168.56.103'])
+cluster = Cluster(list_of_ip,load_balancing_policy=TokenAwarePolicy(RoundRobinPolicy()))
+session = cluster.connect()
+session.set_keyspace('thirdeye_test')
+connection.set_session(session)
+#connection.set_session(db.db().getConnection())
 
 ## saving data to database
-for ind, row in tqdm(aircraft_performance_carrier_aircraft_stock.iterrows(), total=aircraft_performance.shape[0]):
+for ind, row in tqdm(aircraft_performance_carrier_aircraft_stock.iterrows(), total=aircraft_performance_carrier_aircraft_stock.shape[0]):
     airlineontime.create(
     flight_date = row['FlightDate'],      
     reporting_airline = row['Reporting_Airline'],
