@@ -1,4 +1,4 @@
-![Third Eye](images\air.png)
+![Third Eye](images/air.png)
 
 ## Table of Contents
 - [Getting Started](#getting-started)
