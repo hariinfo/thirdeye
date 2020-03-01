@@ -1,4 +1,5 @@
 ![Third Eye](images/air.png)
+SENG 5709 - NoSQL Proof-of-Concept
 
 ## Table of Contents
 - [Getting Started](#getting-started)
@@ -96,6 +97,7 @@ thirdeye
 └── README.md            # This file
 ```
 ### Environment Variables
+TODO: ETL should take configuration loacation as input parameter
 
 ## Credits
 - [Installing cassandra from debian package](https://cassandra.apache.org/doc/latest/getting_started/installing.html#installation-from-debian-packages)
