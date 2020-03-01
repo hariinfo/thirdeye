@@ -61,7 +61,11 @@ Edit /etc/cassandra/cassandra.yaml and update following entries
     UN  192.168.56.102  208.19 KiB  256          34.6%             d14ecef6-babd-481c-96bf-6930facbc460  rack1
     UN  192.168.56.103  246.92 KiB  256          31.3%             150187b2-eea9-4f33-bfa1-b039370f19fb  rack1
   ```
-
+- Execute the schema files
+  ```
+  /schema/schema.cql
+  /schema/aircraft.cql
+  ```
 ### Running
 usage: pyton cassandra_loader.py -i <inputconfig file path>
 
