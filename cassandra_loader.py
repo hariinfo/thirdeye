@@ -12,7 +12,6 @@ Created on Sun Feb 23 18:11:22 2020
 #https://stackoverflow.com/questions/49108809/how-to-insert-pandas-dataframe-into-cassandra/50508046
 from src.lib import db 
 from src.model import airlineontime 
-
 from cassandra.cluster import Cluster
 from cassandra.cqlengine.models import Model
 from cassandra.cqlengine import columns

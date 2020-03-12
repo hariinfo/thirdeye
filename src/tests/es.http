@@ -1,0 +1,34 @@
+GET http://localhost:9200/_cat/health?v
+
+###
+PUT http://localhost:9200/my-index'
+Content-Type: application/json
+
+###
+PUT http://localhost:9200/my-index/_settings
+content-type: application/json
+
+{
+  "index.mapping.total_fields.limit": 100000
+}
+
+###
+GET http://localhost:9200/_cat/count?v
+###
+
+DELETE http://localhost:9200/my-index
+
+###
+POST http://localhost:9200/my-index/_doc
+content-type: application/json
+
+{"Date":"2020-01-30","Open":55.650002,"High":57.18,"Low":55.650002,"Close":57.099998,"Adj Close":57.099998,"Volume":5980700}
+
+###
+GET http://localhost:9200/my-index/_doc/_all?pretty
+Content-Content-Type: application/json
+{
+    "query" : {
+        "match_all" : {}
+    }
+}
