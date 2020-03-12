@@ -57,10 +57,22 @@ GET http://localhost:9200/my-index/_search
 content-type: application/json
 
 {
-    "queries": [
-        {"match": {"Date": "2020-02-11"}},
-        {"match": {"High": 10}}
-    ]
+    "query": {
+        "bool": {
+        "must": [
+            {
+            "match": {
+                "Date": "2020-02-11"
+            }
+            },
+            {
+            "match": {
+                "Open": "58.099998"
+            }
+            }
+        ]
+        }
+    },
   "sort": [
     { "Date": "desc" }
   ]
