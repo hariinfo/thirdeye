@@ -39,6 +39,7 @@ create table thirdeye_test.airlineontime (
                 SecurityDelay INT,
                 LateAircraftDelay INT,
                 close DECIMAL,
+                ownership text,
                 PRIMARY KEY ((flight_date), reporting_airline, crsdeptime, tail_number)
         )
         WITH comment='Airline on-time performance data';

@@ -31,7 +31,16 @@ import pandas as pd
 import datetime as dt
 import sys
 
-
+def airline_ownership (row):
+      if row['Reporting_Airline'] == 'DL' :
+           return 'Public'
+      if row['Reporting_Airline'] == 'AA' :
+           return 'Public'
+      if row['Reporting_Airline'] == 'UA' :
+           return 'Public'
+      if row['Reporting_Airline'] == 'LUV' :
+          return 'Public'
+      return 'Private'
 
 # get data file names
 path =r'./input/airlines/performance/2017/test'
@@ -55,16 +64,18 @@ aircraft_performance = pd.concat(dfs, ignore_index=True)
 #aircraft_performance['FlightArrDateTime'] = pd.to_datetime(aircraft_performance.FlightDate.astype(str)+' '+aircraft_performance.CRSArrTime.astype(str))
 #aircraft_performance['FlightDepDateTime'] = pd.to_datetime(aircraft_performance.FlightDate.astype(str)+' '+aircraft_performance.CRSDepTime.astype(str))
 
+%timeit aircraft_performance['ownership'] = aircraft_performance.apply(lambda row: airline_ownership(row), axis=1)
 
 # Concatenate all months of data into one DataFrame
 #aircraft_performance = pd.concat(dfs, ignore_index=True)
-aircraft_performance = aircraft_performance.dropna(subset=['Quarter','Month','FlightDate','Tail_Number','Reporting_Airline','OriginAirportID','DestAirportID'])
+aircraft_performance = aircraft_performance.dropna(subset=['Quarter','Month','FlightDate','Reporting_Airline','OriginAirportID','DestAirportID'])
+aircraft_performance["Tail_Number"].fillna("NaN", inplace = True)
 aircraft_performance["ArrDelay"].fillna("0", inplace = True)
 aircraft_performance["DepDelay"].fillna("0", inplace = True)
 aircraft_performance["ArrDelayMinutes"].fillna("0", inplace = True)
 aircraft_performance["DepDelayMinutes"].fillna("0", inplace = True) 
 aircraft_performance["DepTime"].fillna("0", inplace = True) 
-aircraft_performance["ArrTime"].fillna("0", inplace = True) 
+aircraft_performance["ArrTime"].fillna("0", inplace = True)     
 
 #concatenate the airline name
 carrier_df =  pd.read_csv('./input/airlines/carriers.csv')
@@ -148,13 +159,14 @@ class airlineontime(Model):
   destinationstatecode = columns.Text()
   depdel15 = columns.Integer()
   arrdel15 = columns.Integer()
-  cancelled = = columns.Integer()
+  cancelled = columns.Integer()
   carrierdelay = columns.Integer()
   weatherdelay = columns.Integer()
   nasdelay = columns.Integer()
   securitydelay = columns.Integer()
   lateaircraftdelay = columns.Integer()
   close = columns.Decimal()
+  ownership = columns.Text()
   
 # Apache Cassandra connection
 list_of_ip = (['192.168.56.101', '192.168.56.102', '192.168.56.103'])
@@ -216,4 +228,5 @@ for ind, row in tqdm(aircraft_performance_carrier_aircraft_stock.iterrows(), tot
     securitydelay  = row['SecurityDelay'],
     lateaircraftdelay  = row['LateAircraftDelay'],
     close  = row['Close'],
+    ownership = row['ownership'],
     )
