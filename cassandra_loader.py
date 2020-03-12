@@ -22,6 +22,7 @@ from cassandra.cqlengine import connection
 from cassandra.cqlengine.columns import *
 from tqdm import tqdm
 
+#from confluent_kafka import Producer
 
 
 
@@ -57,7 +58,13 @@ aircraft_performance = pd.concat(dfs, ignore_index=True)
 
 # Concatenate all months of data into one DataFrame
 #aircraft_performance = pd.concat(dfs, ignore_index=True)
-aircraft_performance = aircraft_performance.dropna(subset=['FlightDate','Tail_Number','Reporting_Airline','OriginAirportID','DestAirportID'])
+aircraft_performance = aircraft_performance.dropna(subset=['Quarter','Month','FlightDate','Tail_Number','Reporting_Airline','OriginAirportID','DestAirportID'])
+aircraft_performance["ArrDelay"].fillna("0", inplace = True)
+aircraft_performance["DepDelay"].fillna("0", inplace = True)
+aircraft_performance["ArrDelayMinutes"].fillna("0", inplace = True)
+aircraft_performance["DepDelayMinutes"].fillna("0", inplace = True) 
+aircraft_performance["DepTime"].fillna("0", inplace = True) 
+aircraft_performance["ArrTime"].fillna("0", inplace = True) 
 
 #concatenate the airline name
 carrier_df =  pd.read_csv('./input/airlines/carriers.csv')
@@ -109,9 +116,20 @@ class airlineontime(Model):
   __keyspace__ = 'thirdeye_test'
   __table_name__ = 'airlineontime'
   id = columns.UUID(primary_key=True)
-  crsdeptime = columns.Integer()
-  crsarrtime = columns.Integer()
+  year = columns.Integer()
+  quarter = columns.Integer()
+  month = columns.Integer()
+  dayofmonth = columns.Integer()
+  dayofweek = columns.Integer()
   flight_date = columns.Date()
+  crsdeptime = columns.Integer()
+  actualdeptime = columns.Integer()
+  depdelay = columns.Integer()
+  depdelayminutes = columns.Integer()
+  crsarrtime = columns.Integer()
+  actualarrtime = columns.Integer()
+  arrdelay = columns.Integer()
+  arrdelayminutes = columns.Integer()
   reporting_airline = columns.Text()
   tail_number = columns.Text()
   originairportid = columns.Integer()
@@ -123,8 +141,14 @@ class airlineontime(Model):
   aircraft_type = columns.Text()
   aircraft_engine = columns.Text()
   origincityname = columns.Text()
+  originstatename = columns.Text()
+  originstatecode = columns.Text()
+  destinationcityname = columns.Text()
+  destinationstatename = columns.Text()
+  destinationstatecode = columns.Text()
   depdel15 = columns.Integer()
   arrdel15 = columns.Integer()
+  cancelled = = columns.Integer()
   carrierdelay = columns.Integer()
   weatherdelay = columns.Integer()
   nasdelay = columns.Integer()
@@ -140,24 +164,52 @@ session.set_keyspace('thirdeye_test')
 connection.set_session(session)
 #connection.set_session(db.db().getConnection())
 
+# Apache Kafka connection
+#p = Producer({'bootstrap.servers': '192.168.56.101:9092'})
+#aircraft_performance_carrier_aircraft_stock.to_json(orient='index')
+
+#df.apply(lambda x: print(x.to_json()), axis=1)
+
+#for jdict in aircraft_performance_carrier_aircraft_stock.to_dict(orient='records'):
+#    print(jdict)
+#    p.produce('thirdeye_raw', jdict)
+#    p.flush(30)
+
 ## saving data to database
 for ind, row in tqdm(aircraft_performance_carrier_aircraft_stock.iterrows(), total=aircraft_performance_carrier_aircraft_stock.shape[0]):
     airlineontime.create(
-    flight_date = row['FlightDate'],      
+    year = row['Year'],
+    quarter = row['Quarter'],
+    month = row['Month'],
+    dayofmonth = row['DayofMonth'],
+    dayofweek = row['DayOfWeek'],
+    flight_date = row['FlightDate'],
     reporting_airline = row['Reporting_Airline'],
+    origincityname = row['OriginCityName'],
+    originstatename = row['OriginStateName'],
+    originstatecode = row['OriginState'],
+    destinationcityname = row['DestCityName'],
+    destinationstatename = row['DestStateName'],
+    destinationstatecode = row['DestState'],
     tail_number = row['Tail_Number'],
     originairportid = row['OriginAirportID'],
     destairportid = row['DestAirportID'],
     crsdeptime = row['CRSDepTime'],
+    actualdeptime = row['DepTime'],
+    depdelayminutes = row['DepDelayMinutes'],
+    depdelay = row['DepDelay'],
     crsarrtime = row['CRSArrTime'],
+    actualarrtime = row['ArrTime'],
+    arrdelayminutes = row['ArrDelayMinutes'],
+    arrdelay = row['ArrDelay'],
     carriername = row['Description'],
     aircraft_issue_date = row['issue_date'],
     aircraft_model = row['model'],
     aircraft_type = row['aircraft_type'],
     aircraft_engine = row['engine_type'],
-    origincityname = row['OriginCityName'],
     depdel15 = row['DepDel15'],
     arrdel15  = row['ArrDel15'],
+    cancelled = row['Cancelled'],
     carrierdelay  = row['CarrierDelay'],
     weatherdelay  = row['WeatherDelay'],
     nasdelay  = row['NASDelay'],

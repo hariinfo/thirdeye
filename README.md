@@ -17,6 +17,10 @@ SENG 5709 - NoSQL Proof-of-Concept
 TODO: unit test coverage
 
 ### Installation
+#### Kafka Setup
+pip install kafka-python
+
+~/kafka/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic thirdeye_raw
 #### Cassandra Setup
 I have a 3 node cassandra cluster that makes use of [SimpeStrategy](https://docs.datastax.com/en/archived/cassandra/3.0/cassandra/architecture/archDataDistributeReplication.html) replication strategy as all the nodes are running on the same host guest OS (Similar to a single DC setup).
 
