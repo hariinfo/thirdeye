@@ -14,6 +14,9 @@ Where condition is only suported for columns that are defined either as a primar
 
 The workaround is to use ALLOW FILTERING which provides the capability to query the clustering columns using any condition.
 
+Error:
+Cannot execute this query as it might involve data filtering and thus may have unpredictable performance. If you want to execute this query despite the performance unpredictability, use ALLOW FILTERING
+
 The limitation of this workaround is that Datastax recommends this workaround only for development
 ## 3. Kafka
 ### 3.1 BufferError: Local: Queue full
