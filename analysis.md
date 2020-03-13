@@ -95,7 +95,7 @@ content-type: application/json
           },
           "aggs":{
             "arrival_delay":{
-              "avg":{
+              "stats":{
                 "field": "ArrDelayMinutes"
               }
             }

@@ -172,27 +172,53 @@ content-type: application/json
     }
 }
 
-###
+### Get All records
 GET http://localhost:9200/my-index/_search
 content-type: application/json
 
 {
-    "size": 0,
-    "aggs" : {
-        "group_by_name" : {
-          "terms": {
-            "field": "Reporting_Airline.keyword"
-            ,"order" : {
-              "arrival_delay": "desc"
-            }
-          },
-          "aggs":{
-            "arrival_delay":{
-              "avg":{
-                "field": "ArrDelayMinutes"
-              }
-            }
-          }
-        }    
+  "_source": [],
+  "size": 10,
+  "query": {
+    "bool": {
+      "must": [],
+      "filter": [],
+      "should": [],
+      "must_not": []
     }
+  }
+}
+
+### Get All records
+GET http://localhost:9200/my-index/_search
+content-type: application/json
+
+{
+   "_source": [],
+   "size": 10,
+   "query": {
+      "bool": {
+         "must": [],
+         "filter": [
+            {
+               "exists": {
+                  "field": "Reporting_Airline.keyword"
+               }
+            }
+         ],
+         "should": [],
+         "must_not": []
+      }
+   },
+   "aggs": {
+      "delay": {
+         "terms": {
+            "field": "Reporting_Airline.keyword",
+            "order": {
+               "_count": "desc"
+            },
+            "size": "20"
+         }
+      }
+   }
 }

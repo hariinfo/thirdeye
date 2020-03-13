@@ -6,6 +6,8 @@ Created on Sun Feb 23 18:11:22 2020
 """
 #pip install cassandra-driver
 #pip install elasticsearch
+#pip install confluent-kafka
+
 
 # Using tablesplus https://tableplus.com/ as my NoSQL Client to quickly run queries rather than using CQL which is only available on the cassandra node
 #SimpleStrategy is used as we assume this to be single DC setup
@@ -23,8 +25,7 @@ from cassandra.cqlengine.columns import *
 from tqdm import tqdm
 import json
 
-#from confluent_kafka import Producer
-
+from confluent_kafka import Producer
 from elasticsearch import Elasticsearch
 
 
@@ -242,21 +243,18 @@ session.set_keyspace('thirdeye_test')
 connection.set_session(session)
 #connection.set_session(db.db().getConnection())
 
-# Apache Kafka connection
-#p = Producer({'bootstrap.servers': '192.168.56.101:9092'})
 #aircraft_performance_carrier_aircraft_stock.to_json(orient='index')
 
-#df.apply(lambda x: print(x.to_json()), axis=1)
+records = aircraft_performance_carrier_aircraft_stock.to_dict(orient='records')
 
-#for jdict in aircraft_performance_carrier_aircraft_stock.to_dict(orient='records'):
-#    print(jdict)
-#    p.produce('thirdeye_raw', jdict)
-#    p.flush(30)
-
+# Apache Kafka connection
+p = Producer({'bootstrap.servers': '192.168.56.101:9092'})
+for j in tqdm(len(records)):
+#for j in range(len(records)):
+    p.produce("thirdeye_raw", key="key", value=json.dumps(records[j]))
+    p.poll(0)
 
 es = Elasticsearch()
-
-records = aircraft_performance_carrier_aircraft_stock.to_dict(orient='records')
 for j in range(len(records)):
 #for ind, row in tqdm(aircraft_performance_carrier_aircraft_stock.iterrows(), total=aircraft_performance_carrier_aircraft_stock.shape[0]):
     #print(json.dumps(records[j]))
