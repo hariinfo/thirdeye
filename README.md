@@ -11,6 +11,7 @@ SENG 5709 - NoSQL Proof-of-Concept
   - [Installation](#installation)
 - [Leassons Learnt](leassons_learnt.md)
 - [Analytical Questions](analysis.md)
+- [Analytical Reports (Jupyter Notebook)](visualization/airline_performance.ipynb)
 - [Credits](#credits)
 
 ## Architecture
