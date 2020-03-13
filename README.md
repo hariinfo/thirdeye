@@ -2,14 +2,42 @@
 SENG 5709 - NoSQL Proof-of-Concept
 
 ## Table of Contents
+- [Architecture](#architecture)
+  - [File Structure](#file-structure)
+  - [Environment Variables](#environment-variables)
 - [Getting Started](#getting-started)
   - [Development Environment Setup](#development-environment-setup)
   - [Unit Testing](#unit-testing)
   - [Installation](#installation)
-- [Architecture](#architecture)
-  - [File Structure](#file-structure)
-  - [Environment Variables](#environment-variables)
 - [Credits](#credits)
+
+## Architecture
+![Third Eye](images/etl.png)
+### Primary NoSQL Database
+I have a 3 node cassandra ring setup.
+The 3 nodes run on a oracle virtual box and the guest OS is a windows machine
+- 198.168.56.101 node1
+- 198.168.56.102 node2
+- 198.168.56.103 node3
+![Third Eye](images/cassandra_setup.png)
+
+
+### File Structure
+
+The default file structure looks like this:
+
+```
+thirdeye
+├── src/                 # Python ETL source code
+   ├── lib               # libraries
+   ├── model             # Object mapper
+   ├── config            # Configuration File
+   ├── tests             # Unit test
+├── input/airlines       # Data files
+└── README.md            # This file
+```
+### Environment Variables
+TODO: ETL should take configuration loacation as input parameter
 
 ## Getting Started
 ### Development Environment Setup
@@ -85,33 +113,6 @@ pip install cassandra-driver
 ```
 
 pip install tqdm
-## Architecture
-![Third Eye](images/etl.png)
-### Primary NoSQL Database
-I have a 3 node cassandra ring setup.
-The 3 nodes run on a oracle virtual box and the guest OS is a windows machine
-- 198.168.56.101 node1
-- 198.168.56.102 node2
-- 198.168.56.103 node3
-![Third Eye](images/cassandra_setup.png)
-
-
-### File Structure
-
-The default file structure looks like this:
-
-```
-thirdeye
-├── src/                 # Python ETL source code
-   ├── lib               # libraries
-   ├── model             # Object mapper
-   ├── config            # Configuration File
-   ├── tests             # Unit test
-├── input/airlines       # Data files
-└── README.md            # This file
-```
-### Environment Variables
-TODO: ETL should take configuration loacation as input parameter
 
 ## Credits
 - [Installing cassandra from debian package](https://cassandra.apache.org/doc/latest/getting_started/installing.html#installation-from-debian-packages)
