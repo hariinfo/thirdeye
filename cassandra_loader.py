@@ -5,6 +5,7 @@ Created on Sun Feb 23 18:11:22 2020
 @author: harii
 """
 #pip install cassandra-driver
+#pip install elasticsearch
 
 # Using tablesplus https://tableplus.com/ as my NoSQL Client to quickly run queries rather than using CQL which is only available on the cassandra node
 #SimpleStrategy is used as we assume this to be single DC setup
@@ -20,9 +21,11 @@ from cassandra.cqlengine.management import sync_table
 from cassandra.cqlengine import connection
 from cassandra.cqlengine.columns import *
 from tqdm import tqdm
+import json
 
 #from confluent_kafka import Producer
 
+from elasticsearch import Elasticsearch
 
 
 import glob
@@ -75,6 +78,68 @@ aircraft_performance["ArrDelayMinutes"].fillna("0", inplace = True)
 aircraft_performance["DepDelayMinutes"].fillna("0", inplace = True) 
 aircraft_performance["DepTime"].fillna("0", inplace = True) 
 aircraft_performance["ArrTime"].fillna("0", inplace = True)     
+aircraft_performance["ArrTime"].fillna("0", inplace = True)     
+
+#Drop columns
+aircraft_performance.drop(['CancellationCode'], axis=1, inplace = True)
+aircraft_performance.drop(['FirstDepTime'], axis=1, inplace = True)
+aircraft_performance.drop(['TotalAddGTime'], axis=1, inplace = True)
+aircraft_performance.drop(['LongestAddGTime'], axis=1, inplace = True)
+aircraft_performance.drop(['DivAirportLandings'], axis=1, inplace = True)
+aircraft_performance.drop(['DivReachedDest'], axis=1, inplace = True)
+aircraft_performance.drop(['DivActualElapsedTime'], axis=1, inplace = True)
+aircraft_performance.drop(['DivArrDelay'], axis=1, inplace = True)
+aircraft_performance.drop(['DivDistance'], axis=1, inplace = True)
+aircraft_performance.drop(['Div1Airport'], axis=1, inplace = True)
+aircraft_performance.drop(['Div1AirportID'], axis=1, inplace = True)
+aircraft_performance.drop(['Div1AirportSeqID'], axis=1, inplace = True)
+aircraft_performance.drop(['Div1WheelsOn'], axis=1, inplace = True)
+aircraft_performance.drop(['Div1TotalGTime'], axis=1, inplace = True)
+aircraft_performance.drop(['Div1LongestGTime'], axis=1, inplace = True)
+aircraft_performance.drop(['Div1WheelsOff'], axis=1, inplace = True)
+aircraft_performance.drop(['Div1TailNum'], axis=1, inplace = True)
+aircraft_performance.drop(['Div2Airport'], axis=1, inplace = True)
+aircraft_performance.drop(['Div2AirportID'], axis=1, inplace = True)
+aircraft_performance.drop(['Div2AirportSeqID'], axis=1, inplace = True)
+aircraft_performance.drop(['Div2WheelsOn'], axis=1, inplace = True)
+aircraft_performance.drop(['Div2TotalGTime'], axis=1, inplace = True)
+aircraft_performance.drop(['Div2LongestGTime'], axis=1, inplace = True)
+aircraft_performance.drop(['Div2WheelsOff'], axis=1, inplace = True)
+aircraft_performance.drop(['Div2TailNum'], axis=1, inplace = True)
+aircraft_performance.drop(['Div3Airport'], axis=1, inplace = True)
+aircraft_performance.drop(['Div3AirportID'], axis=1, inplace = True)
+aircraft_performance.drop(['Div3AirportSeqID'], axis=1, inplace = True)
+aircraft_performance.drop(['Div3WheelsOn'], axis=1, inplace = True)
+aircraft_performance.drop(['Div3TotalGTime'], axis=1, inplace = True)
+aircraft_performance.drop(['Div3WheelsOff'], axis=1, inplace = True)
+aircraft_performance.drop(['Div3TailNum'], axis=1, inplace = True)
+aircraft_performance.drop(['Div4Airport'], axis=1, inplace = True)
+aircraft_performance.drop(['Div4AirportID'], axis=1, inplace = True)
+aircraft_performance.drop(['Div4AirportSeqID'], axis=1, inplace = True)
+aircraft_performance.drop(['Div4WheelsOn'], axis=1, inplace = True)
+aircraft_performance.drop(['Div4TotalGTime'], axis=1, inplace = True)
+aircraft_performance.drop(['Div4LongestGTime'], axis=1, inplace = True)
+aircraft_performance.drop(['Div4WheelsOff'], axis=1, inplace = True)
+aircraft_performance.drop(['Div4TailNum'], axis=1, inplace = True)
+aircraft_performance.drop(['Div5Airport'], axis=1, inplace = True)
+aircraft_performance.drop(['Div5AirportID'], axis=1, inplace = True)
+aircraft_performance.drop(['Div5AirportSeqID'], axis=1, inplace = True)
+aircraft_performance.drop(['Div5WheelsOn'], axis=1, inplace = True)
+aircraft_performance.drop(['Div5TotalGTime'], axis=1, inplace = True)
+aircraft_performance.drop(['Div5LongestGTime'], axis=1, inplace = True)
+aircraft_performance.drop(['Div5WheelsOff'], axis=1, inplace = True)
+aircraft_performance.drop(['Div5TailNum'], axis=1, inplace = True)
+aircraft_performance.drop(['Unnamed: 109'], axis=1, inplace = True)
+aircraft_performance.drop(['Div3LongestGTime'], axis=1, inplace = True)
+aircraft_performance.drop(['ArrivalDelayGroups'], axis=1, inplace = True)
+aircraft_performance.drop(['ActualElapsedTime'], axis=1, inplace = True)
+aircraft_performance.drop(['AirTime'], axis=1, inplace = True)
+aircraft_performance.drop(['DepartureDelayGroups'], axis=1, inplace = True)
+aircraft_performance.drop(['TaxiOut'], axis=1, inplace = True)
+aircraft_performance.drop(['WheelsOff'], axis=1, inplace = True)
+aircraft_performance.drop(['WheelsOn'], axis=1, inplace = True)
+aircraft_performance.drop(['TaxiIn'], axis=1, inplace = True)
+
 
 #concatenate the airline name
 carrier_df =  pd.read_csv('./input/airlines/carriers.csv')
@@ -118,6 +183,8 @@ aircraft_performance_carrier_aircraft_stock = pd.merge(aircraft_performance_carr
 
 #Fill all other stock value with 0
 aircraft_performance_carrier_aircraft_stock['Close'] = aircraft_performance_carrier_aircraft_stock['Close'].fillna(0)
+aircraft_performance_carrier_aircraft_stock.drop(['Date'], axis=1, inplace = True)
+aircraft_performance_carrier_aircraft_stock.drop(['Code_y'], axis=1, inplace = True)
 
 ## Code to load the data into cassandra
 ## We are making use of cassandra object mapper to map dataframe rows to the object representation
@@ -185,6 +252,15 @@ connection.set_session(session)
 #    print(jdict)
 #    p.produce('thirdeye_raw', jdict)
 #    p.flush(30)
+
+
+es = Elasticsearch()
+
+records = aircraft_performance_carrier_aircraft_stock.to_dict(orient='records')
+for j in range(len(records)):
+#for ind, row in tqdm(aircraft_performance_carrier_aircraft_stock.iterrows(), total=aircraft_performance_carrier_aircraft_stock.shape[0]):
+    #print(json.dumps(records[j]))
+    es.index(index="my-index", body=json.dumps(records[j]))
 
 ## saving data to database
 for ind, row in tqdm(aircraft_performance_carrier_aircraft_stock.iterrows(), total=aircraft_performance_carrier_aircraft_stock.shape[0]):

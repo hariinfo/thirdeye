@@ -22,7 +22,7 @@ DELETE http://localhost:9200/my-index
 POST http://localhost:9200/my-index/_doc
 content-type: application/json
 
-{"Date":"2020-01-30","Open":55.650002,"High":57.18,"Low":55.650002,"Close":57.099998,"Adj Close":57.099998,"Volume":5980700}
+{"Year": 2017, "Quarter": 1, "Month": 1, "DayofMonth": 8, "DayOfWeek": 7, "FlightDate": "2017-01-08", "Reporting_Airline": "AA", "DOT_ID_Reporting_Airline": 19805, "IATA_CODE_Reporting_Airline": "AA", "Tail_Number": "N373AA", "Flight_Number_Reporting_Airline": 5, "OriginAirportID": 11298, "OriginAirportSeqID": 1129804, "OriginCityMarketID": 30194, "Origin": "DFW", "OriginCityName": "Dallas/Fort Worth, TX", "OriginState": "TX", "OriginStateFips": 48, "OriginStateName": "Texas", "OriginWac": 74, "DestAirportID": 12173, "DestAirportSeqID": 1217302, "DestCityMarketID": 32134, "Dest": "HNL", "DestCityName": "Honolulu, HI", "DestState": "HI", "DestStateFips": 15, "DestStateName": "Hawaii", "DestWac": 2, "CRSDepTime": "1135", "DepTime": "0", "DepDelay": "0", "DepDelayMinutes": "0", "DepDel15": 0.0, "DepartureDelayGroups": NaN, "DepTimeBlk": "1100-1159", "TaxiOut": NaN, "WheelsOff": NaN, "WheelsOn": NaN, "TaxiIn": NaN, "CRSArrTime": "1612", "ArrTime": "0", "ArrDelay": "0", "ArrDelayMinutes": "0", "ArrDel15": 0.0, "ArrTimeBlk": "1600-1659", "Cancelled": 1.0, "Diverted": 0.0, "CRSElapsedTime": 517.0, "Flights": 1.0, "Distance": 3784.0, "DistanceGroup": 11, "CarrierDelay": 0.0, "WeatherDelay": 0.0, "NASDelay": 0.0, "SecurityDelay": 0.0, "LateAircraftDelay": 0.0, "ownership": "Public", "Code_x": "AA", "Description": "American Airlines Inc.", "tailnum": "N373AA", "type": "Corporation", "manufacturer": "BOEING", "issue_date": "1992-06-08", "model": "767-323", "status": "Valid", "aircraft_type": "Fixed Wing Multi-Engine", "engine_type": "Turbo-Fan", "year": "1992", "Close": 0.0}
 
 ###
 GET http://localhost:9200/my-index/_search?pretty=true&q=*:*
@@ -39,19 +39,85 @@ content-type: application/json
 }
 
 ###
+GET http://localhost:9200/my-index/_count
+
+###
 GET http://localhost:9200/my-index/_search
 content-type: application/json
 
 {
     "query": {
-         "match": {"Date": "2020-02-11"} 
+         "match": {"FlightDate": "2017-01-15"} 
         },
   "sort": [
-    { "Date": "desc" }
+    { "FlightDate": "desc" }
   ]
 }
 
+###
+GET http://localhost:9200/my-index/_search
+content-type: application/json
 
+{
+    "query": {
+        "bool": {
+        "must": [
+            {
+            "match": {
+                "Year": 2017
+            }
+            },
+            {
+            "match": {
+                "Month": 1
+            }
+            },
+            {
+            "match": {
+                "DayofMonth": 1
+            }
+            }
+        ]
+        }
+    },
+  "aggs": {
+        "avg_delay" : { "avg" : { "field" : "ArrDelayMinutes" } },
+        "max_delay" : { "max" : { "field" : "ArrDelayMinutes" } },
+        "min_delay" : { "min" : { "field" : "ArrDelayMinutes" } }
+    }
+}
+###
+GET http://localhost:9200/my-index/_search
+content-type: application/json
+
+{
+    "query": {
+        "bool": {
+        "must": [
+            {
+            "match": {
+                "Tail_Number": NaN
+            }
+            },
+            {
+            "match": {
+                "Month": 1
+            }
+            },
+            {
+            "match": {
+                "DayofMonth": 1
+            }
+            }
+        ]
+        }
+    },
+  "aggs": {
+        "avg_delay" : { "avg" : { "field" : "ArrDelayMinutes" } },
+        "max_delay" : { "max" : { "field" : "ArrDelayMinutes" } },
+        "min_delay" : { "min" : { "field" : "ArrDelayMinutes" } }
+    }
+}
 ###
 GET http://localhost:9200/my-index/_search
 content-type: application/json
