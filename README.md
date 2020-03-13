@@ -9,6 +9,8 @@ SENG 5709 - NoSQL Proof-of-Concept
   - [Development Environment Setup](#development-environment-setup)
   - [Unit Testing](#unit-testing)
   - [Installation](#installation)
+- [Leassons Learnt](leassons_learnt.md)
+- [Analytical Questions](analysis.md)
 - [Credits](#credits)
 
 ## Architecture
