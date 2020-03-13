@@ -1,4 +1,7 @@
 # 1 Analytical Questions
+Each analytical question has two sections.
+A SQL query is used to run against the cassandra DB and a JSON query for Elasticsearch
+
 ## 1.1 Simple
 ### What is the min/max/average delays for an airline on a given day/month/year?  
 ```sql
@@ -40,6 +43,12 @@ content-type: application/json
 }
 ```
 ### Top 3 Airlines that did not report the aircraft tail number (Aircraft tail number was null)
+
+```sql
+select * from thirdeye_test.airlineontime
+where flight_date='2017-01-01' AND  tail_number = 'NaN' ALLOW FILTERING
+
+```
 ```json
 GET http://localhost:9200/my-index/_search
 content-type: application/json
@@ -71,6 +80,29 @@ content-type: application/json
 ```
 ### What is the min, max and average time between the planned and actual arrival time of the aircraft by airline?
 ```json
+GET http://localhost:9200/my-index/_search
+content-type: application/json
+
+{
+    "size": 0,
+    "aggs" : {
+        "group_by_name" : {
+          "terms": {
+            "field": "Reporting_Airline.keyword"
+            ,"order" : {
+              "arrival_delay": "desc"
+            }
+          },
+          "aggs":{
+            "arrival_delay":{
+              "avg":{
+                "field": "ArrDelayMinutes"
+              }
+            }
+          }
+        }    
+    }
+}
 ```
 
 ## 1.2 Moderate
