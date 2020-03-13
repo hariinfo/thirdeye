@@ -120,3 +120,5 @@ pip install tqdm
 ## Credits
 - [Installing cassandra from debian package](https://cassandra.apache.org/doc/latest/getting_started/installing.html#installation-from-debian-packages)
 - [Defining cassandra data schema](https://cassandra.apache.org/doc/latest/data_modeling/data_modeling_schema.html)
+- [Elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html)
+- [Cassandra CQL](https://docs.datastax.com/en/cql-oss/3.3/cql/cqlIntro.html)
