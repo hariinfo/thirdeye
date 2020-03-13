@@ -1,7 +1,7 @@
 ## 1. Data Cleansing
-### Dealing with NaN
+### 1.1 Dealing with NaN
 
-### Date format
+### 1.2 Date format
 
 ## 2. Cassandra
 ### 2.1 SQL "NOT NULL" is not supported

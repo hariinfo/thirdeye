@@ -86,12 +86,13 @@ pip install cassandra-driver
 
 pip install tqdm
 ## Architecture
+![Third Eye](images/etl.png)
+### Primary NoSQL Database
 I have a 3 node cassandra ring setup.
 The 3 nodes run on a oracle virtual box and the guest OS is a windows machine
 - 198.168.56.101 node1
 - 198.168.56.102 node2
 - 198.168.56.103 node3
-
 ![Third Eye](images/cassandra_setup.png)
 
 
