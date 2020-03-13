@@ -1,6 +1,11 @@
 # 1 Analytical Questions
 ## 1.1 Simple
 ### What is the min/max/average delays for an airline on a given day/month/year?  
+```sql
+select MAX(arrdelayminutes), MIN(arrdelayminutes), AVG(arrdelayminutes) from thirdeye_test.airlineontime
+where year=2017 and month = 1 and dayofmonth=1 ALLOW FILTERING
+```
+
 ```json
 GET http://localhost:9200/my-index/_search
 content-type: application/json
@@ -50,7 +55,8 @@ content-type: application/json
             }
         ]
         }
-    }
+    },
+     "size": 3
 }
 ```
 
