@@ -51,7 +51,7 @@ TODO: unit test coverage
 pip install cassandra-driver
 pip install elasticsearch
 pip install confluent-kafka
-
+pip install elasticsearch-dsl
 #### Kafka Setup
 
 ~/kafka/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic thirdeye_raw
