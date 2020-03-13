@@ -6,6 +6,9 @@
 ## 2. Cassandra
 ### 2.1 SQL "NOT NULL" is not supported
 Cassandra open source version has no support to perform a NOT null check in the SQL
+
+The workaround in this case is to convert the null values to string literal such as 'NaN'. I used this technique for the Tail_Number field and replace all null value with 'NaN' during data cleansing task
+
 ### 2.2 SQL "WHERE" condition limitations
 Where condition is only suported for columns that are defined either as a primary key or composite key
 
