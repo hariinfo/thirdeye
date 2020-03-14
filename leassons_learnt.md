@@ -6,7 +6,11 @@
 ## 2. Cassandra
 Cassandra database comes with a highly restrictive query model. My biggest learning from this assignment is Cassandra can not be thougt about as RDBMS. Cassandra CQL comes with just too many restrictions and is no where close to the RDBMS SQL.
 
-### 2.1 SQL "NOT NULL" is not supported
+### 2.1 No equivalent for SQL "OR" condition
+
+Reference: https://stackoverflow.com/questions/26309198/cassandra-cql-or-operator
+
+### 2.2 SQL "NOT NULL" is not supported
 Cassandra open source version has no support to perform a NOT null check in the SQL.
 This is becuase Cassandra is sparse, which means that only data that is used is actually stored.
 
@@ -14,7 +18,7 @@ The workaround in this case is to convert the null values to string literal such
 
 Reference: https://stackoverflow.com/questions/20981075/how-can-i-search-for-records-that-have-a-null-empty-field-using-cql
 
-### 2.2 SQL "WHERE" condition limitations
+### 2.3 SQL "WHERE" condition limitations
 Where condition is only suported for columns that are defined either as a primary key or composite key
 
 The workaround is to use ALLOW FILTERING which provides the capability to query the clustering columns using any condition.

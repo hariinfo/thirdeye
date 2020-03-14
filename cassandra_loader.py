@@ -41,7 +41,7 @@ def airline_ownership (row):
            return 'Public'
       if row['Reporting_Airline'] == 'UA' :
            return 'Public'
-      if row['Reporting_Airline'] == 'LUV' :
+      if row['Reporting_Airline'] == 'WN' :
           return 'Public'
       return 'Private'
 
@@ -247,12 +247,21 @@ connection.set_session(session)
 
 records = aircraft_performance_carrier_aircraft_stock.to_dict(orient='records')
 
+conf = {
+                'bootstrap.servers':'192.168.56.101:9092',
+                'queue.buffering.max.messages': 500000,
+                'queue.buffering.max.ms': 60000,
+                'batch.num.messages': 100,
+                'log.connection.close': False,
+                'default.topic.config': {'acks': 'all'}
+            }
+
 # Apache Kafka connection
-p = Producer({'bootstrap.servers': '192.168.56.101:9092'})
-for j in tqdm(len(records)):
+p = Producer(conf)
+for j in tqdm(range(len(records))):
 #for j in range(len(records)):
     p.produce("thirdeye_raw", key="key", value=json.dumps(records[j]))
-    p.poll(0)
+    #p.poll(0)
 
 es = Elasticsearch()
 for j in range(len(records)):
