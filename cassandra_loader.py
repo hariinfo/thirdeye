@@ -41,7 +41,7 @@ def airline_ownership (row):
            return 'Public'
       if row['Reporting_Airline'] == 'UA' :
            return 'Public'
-      if row['Reporting_Airline'] == 'WN' :
+      if row['Reporting_Airline'] == 'WN    ' :
           return 'Public'
       return 'Private'
 
@@ -68,6 +68,11 @@ aircraft_performance = pd.concat(dfs, ignore_index=True)
 #aircraft_performance['FlightDepDateTime'] = pd.to_datetime(aircraft_performance.FlightDate.astype(str)+' '+aircraft_performance.CRSDepTime.astype(str))
 
 %timeit aircraft_performance['ownership'] = aircraft_performance.apply(lambda row: airline_ownership(row), axis=1)
+
+aircraft_performance.isnull().sum()
+print(aircraft_performance.shape)
+print(aircraft_performance.info())
+
 
 # Concatenate all months of data into one DataFrame
 #aircraft_performance = pd.concat(dfs, ignore_index=True)
