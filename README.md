@@ -36,6 +36,7 @@ thirdeye
    ├── model             # Object mapper
    ├── config            # Configuration File
    ├── tests             # Unit test
+   ├── consumer          # Kafka consumer for ES and Cassandra
 ├── input/airlines       # Data files
 └── README.md            # This file
 ```
