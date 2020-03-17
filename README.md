@@ -37,6 +37,7 @@ thirdeye
    ├── config            # Configuration File
    ├── tests             # Unit test
    ├── consumer          # Kafka consumer for ES and Cassandra
+   ├── etltostream.py    # ETL to streaming to Kafka topic
 ├── input/airlines       # Data files
 └── README.md            # This file
 ```

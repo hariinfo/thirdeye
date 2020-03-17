@@ -20,3 +20,10 @@ wait for a min...
 
 ### Latest message offset
 ~/kafka/bin/kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list localhost:9092 --topic thirdeye_raw --time -1
+
+### Get the earliest offset still in a topic
+~/kafka/bin/kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list localhost:9092 --topic thirdeye_raw --time -2
+
+### Get the consumer offsets for a topic
+~/kafka/bin/kafka-consumer-offset-checker.sh --zookeeper=localhost:2181 --topic=thirdeye_raw --group=es-group
+

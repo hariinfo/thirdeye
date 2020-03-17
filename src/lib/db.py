@@ -5,7 +5,7 @@
 from cassandra.cluster import Cluster
 from cassandra.policies import TokenAwarePolicy, RoundRobinPolicy
 from cassandra.cqlengine import connection
-from src.lib import configloader
+from lib import configloader
 
 class db:
     def __init__(self):
