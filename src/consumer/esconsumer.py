@@ -65,7 +65,7 @@ def main():
     # Apache Kafka connection
     consumer = Consumer(conf)
     es = Elasticsearch()
-    basic_consume_loop(consumer, ["thirdeye_raw"], es)
+    basic_consume_loop(consumer, ["airline_raw"], es)
 
 
 def shutdown():

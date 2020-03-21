@@ -59,32 +59,88 @@ GET http://localhost:9200/my-index/_search
 content-type: application/json
 
 {
+    "query" : {
+        "bool" : {
+            "must" : [
+                {"term" : {"Year" : "2017"}},
+                {"term": {"Month": "1" }},
+                {"range" : {"CarrierDelay" : {"gt" : 0}}} 
+            ]
+        }
+    }
+}
+###
+GET http://localhost:9200/my-index/_search
+content-type: application/json
+
+{
     "query": {
         "bool": {
         "must": [
-            {
-            "match": {
-                "Year": 2017
-            }
-            },
-            {
-            "match": {
-                "Month": 1
-            }
-            },
-            {
-            "match": {
-                "DayofMonth": 1
-            }
-            }
+                {"term" : {"Year" : "2017"}},
+                {"range" : {"ArrDel15" : {"gt" : 0}}}
         ]
         }
-    },
-  "aggs": {
-        "avg_delay" : { "avg" : { "field" : "ArrDelayMinutes" } },
-        "max_delay" : { "max" : { "field" : "ArrDelayMinutes" } },
-        "min_delay" : { "min" : { "field" : "ArrDelayMinutes" } }
     }
+    ,"aggs" : {
+        "sales_per_month" : {
+            "date_histogram" : {
+                "field" : "FlightDate",
+                "calendar_interval" : "month"
+            },
+            "aggs": {
+                "types_count" : { "value_count" : { "field" : "CarrierDelay" } }
+            }
+        }
+    }
+}
+###
+GET http://localhost:9200/my-index/_search
+content-type: application/json
+
+{
+      query: {
+        multi_match: {
+          query: "keywords",
+          fields: ["DestCityName", "ArrDel15", "FlightDate"]
+        }
+      },
+      aggs: {
+        by_email: { 
+          terms: {
+            field: "DestCityName",
+            size: 10,
+            order: { max_score: "desc" } 
+          },
+          aggs: { 
+            by_top_hit: { top_hits: { size: 15 } },
+            max_score: { max: { lang: "expression", script: "_score" } }
+          }
+        }
+      }
+}   
+###
+GET http://localhost:9200/my-index/_search
+content-type: application/json
+
+{
+  "aggregations": {
+	"reseller_sale_sum": {
+	  "aggregations": {
+		"sales" : { "value_count" : { "field" : "CarrierDelay" } }
+	  }, 
+	  "terms": {
+		"field": "DestCityName", 
+		"order": {
+		  "sales": "desc"
+		}, 
+		"size": 5
+	  }
+	}
+  }, 
+  "ext": {}, 
+  "query": {  "match_all": {} }, 
+  "size": 0
 }
 ###
 GET http://localhost:9200/my-index/_search

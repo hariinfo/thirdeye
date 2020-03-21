@@ -34,6 +34,7 @@ import pandas as pd
 import datetime as dt
 import sys
 
+#Enrich by adding a column for publicly vs privately managed airlines
 def airline_ownership (row):
       if row['Reporting_Airline'] == 'DL' :
            return 'Public'
@@ -53,40 +54,36 @@ filenames = glob.glob(path + "/*.csv")
 #1. Convert CRSDepTime and CRSArrTime into hhmm format as certain datasets are single digit E.g. 5 will be translated to 0005
 #2. Validate null columns
 #3. Validate dattime format
-#4. Enrich by adding a few columns
 
 dfs = []
 for filename in filenames:
     dfs.append(pd.read_csv(filename, converters={'CRSDepTime': '{:0>4}'.format,'CRSArrTime': '{:0>4}'.format}))
 
-# Concatenate all months of data into one DataFrame
 aircraft_performance = pd.concat(dfs, ignore_index=True)
-#aircraft_performance['CRSDepTime'] = pd.to_datetime(aircraft_performance['CRSDepTime'], format='%H%M', exact=False)
-#aircraft_performance['CRSArrTime'] = pd.to_datetime(aircraft_performance['CRSArrTime'], format='%H%M', exact=False)
-
-#aircraft_performance['FlightArrDateTime'] = pd.to_datetime(aircraft_performance.FlightDate.astype(str)+' '+aircraft_performance.CRSArrTime.astype(str))
-#aircraft_performance['FlightDepDateTime'] = pd.to_datetime(aircraft_performance.FlightDate.astype(str)+' '+aircraft_performance.CRSDepTime.astype(str))
-
+#Enrich by adding a column for publicly vs privately managed airlines
 aircraft_performance['ownership'] = aircraft_performance.apply(lambda row: airline_ownership(row), axis=1)
 
-aircraft_performance.isnull().sum()
-print("Processing {} columns and {} rows of record".format(aircraft_performance.shape[0],aircraft_performance.shape[1]))
-#print(aircraft_performance.info())
+print("Total of {} rows at source".format(aircraft_performance.shape[0]))
 
-
+#ETL Task: Cleanse the data
 # Concatenate all months of data into one DataFrame
-#aircraft_performance = pd.concat(dfs, ignore_index=True)
-aircraft_performance = aircraft_performance.dropna(subset=['Quarter','Month','FlightDate','Reporting_Airline','OriginAirportID','DestAirportID'])
 aircraft_performance["Tail_Number"].fillna("NaN", inplace = True)
+
+# Difference in minutes between scheduled and actual arrival time.
+# Early arrivals show negative, blank columns were replaced with 0, which translates to no arrival delay
 aircraft_performance["ArrDelay"].fillna("0", inplace = True)
 aircraft_performance["DepDelay"].fillna("0", inplace = True)
+
+#Difference in minutes between scheduled and actual departure time. Early departures set to 0.
 aircraft_performance["ArrDelayMinutes"].fillna("0", inplace = True)
 aircraft_performance["DepDelayMinutes"].fillna("0", inplace = True) 
+
+#We don't use these columns for analysis, defaulting it to 0 so we don't loose out the records
 aircraft_performance["DepTime"].fillna("0", inplace = True) 
 aircraft_performance["ArrTime"].fillna("0", inplace = True)     
 aircraft_performance["ArrTime"].fillna("0", inplace = True)     
 
-#Drop columns
+#Drop columns as every field is null in the source data
 aircraft_performance.drop(['CancellationCode'], axis=1, inplace = True)
 aircraft_performance.drop(['FirstDepTime'], axis=1, inplace = True)
 aircraft_performance.drop(['TotalAddGTime'], axis=1, inplace = True)
@@ -205,7 +202,9 @@ conf = {
 
 # Apache Kafka connection
 p = Producer(conf)
-print("Streamin to kafka........")
+print("Streaming to kafka........")
 for j in tqdm(range(len(records))):
-    p.produce("thirdeye_raw", key="key", value=json.dumps(records[j]))
+    key = records[j]["FlightDate"] + "-" + records[j]["Reporting_Airline"] + "-" + records[j]["CRSDepTime"] + "-" + records[j]["Tail_Number"]
+    #print(key)
+    p.produce("airline_raw", key=key, value=json.dumps(records[j]))
     #p.poll(0)
